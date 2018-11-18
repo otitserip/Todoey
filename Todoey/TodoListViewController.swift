@@ -10,7 +10,7 @@ import UIKit
 
 class TodoListViewController: UITableViewController {
     
-    let itemArray = ["Find Mike", "Buy Eggs", "Destroy demo"]
+    var itemArray = ["Find Mike", "Buy Eggs", "Destroy demo"]
 
     
     
@@ -54,6 +54,42 @@ class TodoListViewController: UITableViewController {
         //retira a barra azul constante quando selected, fica cinzento e depopis desaparece
         tableView.deselectRow(at: indexPath, animated: true)
  
+    }
+    
+ 
+    
+    //MARK - Add New Items Section
+    
+    @IBAction func addButtomPressed(_ sender: UIBarButtonItem) {
+        
+        var textField = UITextField()
+        
+        
+        let alert =  UIAlertController(title: "Add New Todoey Item", message: "", preferredStyle: .alert)
+        
+        let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
+            //What will open once user clicks teh add item button on UIAlert
+            //print(textField.text)
+            if !(textField.text?.isEmpty)! {
+                 self.itemArray.append(textField.text!)
+                //update uitableview
+                self.tableView.reloadData()
+            }
+  
+        }
+        
+        alert.addTextField { (alertTextField) in
+            alertTextField.placeholder = "Create New Item"
+            textField = alertTextField
+            
+        }
+        
+        alert.addAction(action)
+        
+        present(alert, animated: true, completion: nil)
+        
+      
+        
     }
     
     
