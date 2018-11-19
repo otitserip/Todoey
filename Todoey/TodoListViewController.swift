@@ -11,12 +11,19 @@ import UIKit
 class TodoListViewController: UITableViewController {
     
     var itemArray = ["Find Mike", "Buy Eggs", "Destroy demo"]
+    
+    let defaults = UserDefaults.standard
 
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        
+        if let items = defaults.array(forKey: "TodoListArray") as? [String] {
+            
+            itemArray = items
+        }
         
     }
 
@@ -72,6 +79,10 @@ class TodoListViewController: UITableViewController {
             //print(textField.text)
             if !(textField.text?.isEmpty)! {
                  self.itemArray.append(textField.text!)
+                
+                //save to serdefaults
+                self.defaults.setValue(self.itemArray, forKey: "TodoListArray")
+                
                 //update uitableview
                 self.tableView.reloadData()
             }
