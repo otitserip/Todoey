@@ -14,37 +14,15 @@ class TodoListViewController: UITableViewController {
     
     let defaults = UserDefaults.standard
 
-    
+    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
-        if let items = defaults.array(forKey: "TodoListArray") as? [Item] {
-            
-            itemArray = items
-            
-        } else {
-            
-            let newItem = Item()
-            newItem.title = "Find Mike"
-            itemArray.append(newItem)
-            
-            let newItem1 = Item()
-            newItem1.title = "Find Mike2"
-            itemArray.append(newItem1)
-            
-            let newItem2 = Item()
-            newItem2.title = "Find Mike3"
-            itemArray.append(newItem2)
-            
-            let newItem3 = Item()
-            newItem3.title = "Find Mike4"
-            itemArray.append(newItem3)
-            
-        }
-        
-        
+      
+        loadItems()
         
         
         
@@ -83,7 +61,11 @@ class TodoListViewController: UITableViewController {
         
         itemArray[indexPath.row].done =  !itemArray[indexPath.row].done
         
-        tableView.reloadData()
+        //save item plist para actualizar a checkmark
+       saveItems()
+        
+        //update uitableview
+        self.tableView.reloadData()
         
     
         //retira a barra azul constante quando selected, fica cinzento e depopis desaparece
@@ -111,11 +93,8 @@ class TodoListViewController: UITableViewController {
                 newItem.title = textField.text!
                 self.itemArray.append(newItem)
                 
-                //save to serdefaults
-                self.defaults.set(self.itemArray, forKey: "TodoListArray")
-                
-                //update uitableview
-                self.tableView.reloadData()
+                //save to item.plist
+               self.saveItems()
             }
   
         }
@@ -135,5 +114,41 @@ class TodoListViewController: UITableViewController {
     }
     
     
+    
+    
+    //MARK - Save to Item Plist
+    func saveItems() {
+        
+        let encoder = PropertyListEncoder()
+        do {
+            let data = try encoder.encode(itemArray)
+            try data.write(to: dataFilePath!)
+        } catch {
+            print("Error Handling plist file: \(error)")
+        }
+        
+        //update uitableview
+        self.tableView.reloadData()
+        
+    }
+    
+     //MARK - Load Items
+    func loadItems() {
+        
+        if let data = try? Data(contentsOf: dataFilePath!) {
+            let decoder = PropertyListDecoder()
+            
+            do {
+              itemArray = try decoder.decode([Item].self, from: data)
+            } catch {
+                print ("Error decoding plist file: \(error)")
+            }
+            
+        }
+
+    }
+        
+    
+
 }
 
